@@ -5,7 +5,6 @@ import com.customerservice.domain.model.entity.StaffProfile;
 
 public class ApplyTicketCommand {
 
-	private String ticketId;//客服工单唯一编号	
 	private String account;//用户账号
 	private String orderNumber;//订单编号
 	private OrderProfile order;//问询订单
@@ -21,14 +20,6 @@ public class ApplyTicketCommand {
 		this.account = account;
 		this.order = new OrderProfile(orderNumber);
 		this.inquire = inquire;
-	}
-
-	public String getTicketId() {
-		return ticketId;
-	}
-
-	public void setTicketId(String ticketId) {
-		this.ticketId = ticketId;
 	}
 
 	public String getAccount() {

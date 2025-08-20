@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.customerservice.domain.model.entity.OrderProfile;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import com.customerservice.domain.event.TicketAppliedEvent;
@@ -31,17 +32,16 @@ public class CustomerTicket {
 
 	}
 
-	public CustomerTicket(ApplyTicketCommand applyTicketCommand) {
+	public CustomerTicket(String account, String inquire, OrderProfile order, StaffProfile staff) {
 		// 1.设置聚合标识符
-		this.ticketId = new TicketId(applyTicketCommand.getTicketId());
+		this.ticketId = new TicketId("Ticket" + UUID.randomUUID().toString().toUpperCase());
 
 		// 2.创建Consultation
 		String consultationId = "Consultation" + UUID.randomUUID().toString().toUpperCase();
-		this.consultation = new Consultation(consultationId, applyTicketCommand.getAccount(),
-				applyTicketCommand.getOrder(), applyTicketCommand.getInquire());
+		this.consultation = new Consultation(consultationId, account, order, inquire);
 		
 		// 3.获取客服信息
-		this.staff = applyTicketCommand.getStaff();
+		this.staff = staff;
 		
 		// 4.初始化基础信息
 		this.status = TicketStatus.INITIALIZED;

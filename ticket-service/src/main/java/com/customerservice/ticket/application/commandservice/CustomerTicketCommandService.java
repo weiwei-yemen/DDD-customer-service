@@ -35,36 +35,19 @@ public class CustomerTicketCommandService {
 	}
 
 	public TicketId handleCustomerTicketApplication(ApplyTicketCommand applyTicketCommand) {
+		// 1. 通过防腐层(ACL)从外部限界上下文获取所需信息
+		OrderProfile order = aclOrderService.getOrderInfo(applyTicketCommand.getOrderNumber());
+		StaffProfile staff = aclStaffService.getOptimalStaff(applyTicketCommand.getAccount(),
+				order, applyTicketCommand.getInquire());
 
-		// 生成TicketId
-		String ticketId = "Ticket" + UUID.randomUUID().toString().toUpperCase();
-		applyTicketCommand.setTicketId(ticketId);
+		// 2. 创建CustomerTicket聚合根，将从Command中解包出的原始数据和获取到的外部信息一并传入
+		CustomerTicket customerTicket = new CustomerTicket(applyTicketCommand.getAccount(),
+				applyTicketCommand.getInquire(), order, staff);
 
-		// 调用Order限界上下文获取OrderProfile并填充ApplyTicketCommand
-//		OrderProfile order = aclOrderService.getOrderInfo(applyTicketCommand.getOrderNumber());
-		// mock
-		OrderProfile order = new OrderProfile();
-		order.setOrderNumber("orderNumber1");
-		List<GoodsProfile> goodsList = new ArrayList<GoodsProfile>();
-		goodsList.add(new GoodsProfile("goodsCode1", "goodsName1", 100F));
-		order.setGoodsList(goodsList);
-		order.setDeliveryAddress("deliveryAddress1");
-		applyTicketCommand.setOrder(order);
-
-		// 调用StaffOrder限界上下文获取StaffOrderProfile并填充ApplyTicketCommand
-//		StaffProfile staff = aclStaffService.getOptimalStaff(applyTicketCommand.getAccount(),
-//				applyTicketCommand.getOrder(), applyTicketCommand.getInquire());
-		// mock
-		StaffProfile staff = new StaffProfile("staff1", "staffname1", "description1");
-		applyTicketCommand.setStaff(staff);
-
-		// 创建CustomerTicket
-		CustomerTicket customerTicket = new CustomerTicket(applyTicketCommand);
-
-		// 通过资源库持久化CustomerTicket
+		// 3. 通过资源库持久化CustomerTicket
 		customerTicketRepository.save(customerTicket);
 
-		// 返回CustomerTicket的聚合标识符
+		// 4. 返回CustomerTicket的聚合标识符
 		return customerTicket.getTicketId();
 	}
 
