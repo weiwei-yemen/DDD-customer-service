@@ -18,7 +18,7 @@ import com.customerservice.ticket.domain.model.valueobject.Message;
 import com.customerservice.ticket.domain.model.valueobject.TicketScore;
 import com.customerservice.ticket.domain.model.valueobject.TicketStatus;
 
-public class CustomerTicket {
+public class CustomerTicket extends AbstractAggregateRoot<CustomerTicket> {
 
 	private TicketId ticketId;// 客服工单唯一编号
 	private Consultation consultation;// 用户咨询
@@ -47,6 +47,15 @@ public class CustomerTicket {
 		this.status = TicketStatus.INITIALIZED;
 		this.messages = new ArrayList<Message>();
 		this.score = new TicketScore(0);
+		
+		// 5.发布工单申请事件
+		TicketAppliedEvent ticketAppliedEvent = new TicketAppliedEvent(
+				this.ticketId.getTicketId(), 
+				account, 
+				staff.getStaffName(), 
+				MessageSource.CUSTOMER, 
+				inquire);
+		this.registerEvent(ticketAppliedEvent);
 	}
 		
 	public void processTicket(ProcessTicketCommand processTicketCommand) {
@@ -122,5 +131,21 @@ public class CustomerTicket {
 	}
 	public void setScore(TicketScore score) {
 		this.score = score;
+	}
+	
+	/**
+	 * 获取未提交的领域事件
+	 * 这个方法使存储库可以访问事件而无需使用反射
+	 * @return 领域事件列表
+	 */
+	public List<Object> getUncommittedEvents() {
+		return new ArrayList<>(this.domainEvents());
+	}
+	
+	/**
+	 * 清理已提交的事件
+	 */
+	public void markEventsAsCommitted() {
+		this.clearDomainEvents();
 	}
 }

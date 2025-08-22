@@ -18,8 +18,6 @@ import javax.persistence.Transient;
 
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import com.customerservice.domain.event.TicketAppliedEvent;
-import com.customerservice.domain.model.valueobject.MessageSource;
 import com.customerservice.ticket.domain.model.valueobject.TicketStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -29,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @NamedQueries({    
     @NamedQuery(name = "CustomerTicketPO.findAllTicketIds",
             query = "Select t.ticketId from CustomerTicketPO t") })
-public class CustomerTicketPO extends AbstractAggregateRoot<CustomerTicketPO> implements Serializable{
+public class CustomerTicketPO  implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -78,14 +76,6 @@ public class CustomerTicketPO extends AbstractAggregateRoot<CustomerTicketPO> im
 		this.staffId = staffId;
 		this.staffName = staffName;
 		this.staffDescription = staffDescription;		
-		
-		TicketAppliedEvent ticketAppliedEvent = new TicketAppliedEvent(
-				ticketId, 
-				account, 
-				staffName, 
-				MessageSource.CUSTOMER, 
-				inquire);
-		this.registerEvent(ticketAppliedEvent);
 	}
 
 	public Long getId() {
