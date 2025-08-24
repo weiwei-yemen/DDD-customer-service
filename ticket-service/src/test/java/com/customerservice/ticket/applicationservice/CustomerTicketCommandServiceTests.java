@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.customerservice.domain.model.entity.OrderProfile;
 import com.customerservice.domain.model.entity.StaffProfile;
@@ -27,6 +28,7 @@ import com.customerservice.ticket.integration.acl.AclStaffService;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@Transactional
 public class CustomerTicketCommandServiceTests {
 
 	@Autowired

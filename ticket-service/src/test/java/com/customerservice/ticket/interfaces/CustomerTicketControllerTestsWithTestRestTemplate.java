@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.ReflectionUtils;
 
 import com.customerservice.domain.model.entity.OrderProfile;
 import com.customerservice.domain.model.entity.StaffProfile;
@@ -69,12 +71,16 @@ public class CustomerTicketControllerTestsWithTestRestTemplate {
 	// 初始化一个CustomerTicket
 	private CustomerTicket initCustomerTicket() {
 
-		ApplyTicketCommand applyTicketCommand = new ApplyTicketCommand("tianyalan", "orderNumber1", "myInquire");
-		applyTicketCommand.setTicketId("ticketId1");
-		applyTicketCommand.setOrder(createOrderProfile());
-		applyTicketCommand.setStaff(createStaffProfile());
+		OrderProfile orderProfile = createOrderProfile();
+		StaffProfile staffProfile = createStaffProfile();
 
-		CustomerTicket customerTicket = new CustomerTicket(applyTicketCommand);
+		CustomerTicket customerTicket = new CustomerTicket("tianyalan", "myInquire", orderProfile, staffProfile);
+
+		// For test purpose, use reflection to set ticketId
+		TicketId ticketId = new TicketId("ticketId1");
+		Field field = ReflectionUtils.findField(CustomerTicket.class, "ticketId");
+		ReflectionUtils.makeAccessible(field);
+		ReflectionUtils.setField(field, customerTicket, ticketId);
 
 		return customerTicket;
 	}
