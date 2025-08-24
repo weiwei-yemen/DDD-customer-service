@@ -10,9 +10,6 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import com.customerservice.domain.event.TicketAppliedEvent;
 import com.customerservice.domain.model.entity.StaffProfile;
 import com.customerservice.domain.model.valueobject.MessageSource;
-import com.customerservice.ticket.domain.command.ApplyTicketCommand;
-import com.customerservice.ticket.domain.command.FinishTicketCommand;
-import com.customerservice.ticket.domain.command.ProcessTicketCommand;
 import com.customerservice.ticket.domain.model.entity.Consultation;
 import com.customerservice.ticket.domain.model.valueobject.Message;
 import com.customerservice.ticket.domain.model.valueobject.TicketScore;
@@ -58,17 +55,20 @@ public class CustomerTicket extends AbstractAggregateRoot<CustomerTicket> {
 		this.registerEvent(ticketAppliedEvent);
 	}
 		
-	public void processTicket(ProcessTicketCommand processTicketCommand) {
-		
+	/**
+	 * 处理工单
+	 * 接受基本类型参数，不依赖应用层的Command对象
+	 * 符合DDD分层架构中领域层与应用层隔离的原则
+	 */
+	public void processTicket(String ticketId, MessageSource messageSource, String messageContent) {
 		// 验证TicketId是否对当前CustomerTicket对象是否有效
-		String ticketId = processTicketCommand.getTicketId();
 		if(!ticketId.equals(this.ticketId.getTicketId())) {
 			return;
 		}
 
-		// 构建Message
-		Message message = new Message(processTicketCommand.getTicketId(), this.consultation.getAccount(),
-				this.staff.getStaffName(), processTicketCommand.getMessageSource(), processTicketCommand.getMessage());
+		// 构建领域对象Message
+		Message message = new Message(ticketId, this.consultation.getAccount(),
+				this.staff.getStaffName(), messageSource, messageContent);
 		latestMessage = message;
 		this.messages.add(message);
 
@@ -76,10 +76,15 @@ public class CustomerTicket extends AbstractAggregateRoot<CustomerTicket> {
 		this.status = TicketStatus.INPROCESS;
 	}
 
-	public void finishTicket(FinishTicketCommand finishTicketCommand) {
-		// 构建Message
-		Message message = new Message(finishTicketCommand.getTicketId(), this.consultation.getAccount(),
-				this.staff.getStaffName(), MessageSource.CUSTOMER, finishTicketCommand.getMessage());
+	/**
+	 * 结束工单
+	 * 接受基本类型参数，不依赖应用层的Command对象
+	 * 符合DDD分层架构中领域层与应用层隔离的原则
+	 */
+	public void finishTicket(String ticketId, String messageContent, Integer score) {
+		// 构建领域对象Message
+		Message message = new Message(ticketId, this.consultation.getAccount(),
+				this.staff.getStaffName(), MessageSource.CUSTOMER, messageContent);
 		latestMessage = message;
 		this.messages.add(message);
 		
@@ -87,7 +92,7 @@ public class CustomerTicket extends AbstractAggregateRoot<CustomerTicket> {
 		this.status = TicketStatus.CLOSED;
 
 		// 设置工单评分
-		this.score = new TicketScore(finishTicketCommand.getScore());
+		this.score = new TicketScore(score);
 	}
 
 	public TicketId getTicketId() {

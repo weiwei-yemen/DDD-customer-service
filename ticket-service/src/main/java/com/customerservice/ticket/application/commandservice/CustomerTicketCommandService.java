@@ -79,11 +79,16 @@ public class CustomerTicketCommandService {
 		CustomerTicket customerTicket = customerTicketRepository.findByTicketId(processTicketCommand.getTicketId());
 
 		// 调用基础设施层的MaskService进行脱敏
-		String message = processTicketCommand.getMessage();
-		processTicketCommand.setMessage(MaskService.performMask(message));
+		// 保持Command只读，不直接修改原Command对象
+		String originalMessage = processTicketCommand.getMessage();
+		String maskedMessage = MaskService.performMask(originalMessage);
 
-		// 处理更新CustomerTicket业务逻辑
-		customerTicket.processTicket(processTicketCommand);
+		// 调用领域方法，传递基本类型参数而非Command对象
+		customerTicket.processTicket(
+				processTicketCommand.getTicketId(),
+				processTicketCommand.getMessageSource(),
+				maskedMessage
+		);
 
 		// 通过资源库更新CustomerTicket
 		customerTicketRepository.updateCustomerTicket(customerTicket);
@@ -93,8 +98,12 @@ public class CustomerTicketCommandService {
 		// 根据TicketId获取CustomerTicket
 		CustomerTicket customerTicket = customerTicketRepository.findByTicketId(finishTicketCommand.getTicketId());
 
-		// 处理结束CustomerTicket业务逻辑
-		customerTicket.finishTicket(finishTicketCommand);
+		// 调用领域方法，传递基本类型参数而非Command对象
+		customerTicket.finishTicket(
+				finishTicketCommand.getTicketId(),
+				finishTicketCommand.getMessage(),
+				finishTicketCommand.getScore()
+		);
 
 		// 通过资源库更新CustomerTicket
 		customerTicketRepository.updateCustomerTicket(customerTicket);
