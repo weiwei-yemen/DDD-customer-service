@@ -37,6 +37,10 @@ public class CustomerTicketController {
 		this.customerTicketQueryService = customerTicketQueryService;
 	}
 
+
+	// 以下几个查询的方法不应该直接返回领域对象，而是返回DTO
+
+
 	@GetMapping(value = "/")
 	public  List<CustomerTicket> getAllCustomerTicket() {
 		 List<CustomerTicket> customerTickets = customerTicketQueryService.findAll();

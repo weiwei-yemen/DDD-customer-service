@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -23,42 +24,47 @@ import com.customerservice.ticket.infrastructure.repository.mapper.CustomerTicke
 import com.customerservice.ticket.infrastructure.repository.po.CustomerTicketPO;
 import com.customerservice.ticket.infrastructure.repository.po.MessagePO;
 
+// JUnit 5 中用来集成 Spring Test 框架的注解。启动spring上下文、依赖注入
 @ExtendWith(SpringExtension.class)
+// 会自动配置一个h2内存数据库，测试的yml文件中如果有配置数据源，的会覆盖这个H2的配置，需要注意
 @DataJpaTest
+// 指定po的扫描路径
+@EntityScan("com.customerservice.ticket.infrastructure.repository.po")
 public class CustomerTicketMapperTests {
 
-	@Autowired
-	private TestEntityManager entityManager;
-	
-	@Autowired
-	private CustomerTicketMapper customerTicketMapper;
-	
-	@Test
-	public void testFindByTicketId() throws Exception {
-		
-		CustomerTicketPO customerTicketPO = buildCustomerTicketPO();
-		this.entityManager.persist(customerTicketPO);
-		
-		CustomerTicketPO target = this.customerTicketMapper.findByTicketId("ticketId1");
-		assertThat(target).isNotNull();
-		assertThat(target.getTicketId()).isEqualTo("ticketId1");
-	}
-		
-	private CustomerTicketPO buildCustomerTicketPO() {
-		
-		CustomerTicketPO customerTicketPO = new CustomerTicketPO();
-		customerTicketPO.setTicketId("ticketId1");
-		customerTicketPO.setStatus(TicketStatus.INITIALIZED);
-		customerTicketPO.setScore(0);
-		customerTicketPO.setAccount("account1");
-		customerTicketPO.setInquire("myInquire");
-		customerTicketPO.setOrderNumber("orderNumber1");
-		
-		customerTicketPO.setStaffId("staffId1");
-		customerTicketPO.setStaffName("staffName1");
-		customerTicketPO.setStaffDescription("staffDescription");
-		
-		return customerTicketPO;
-	}	
+    @Autowired
+    private TestEntityManager entityManager;
+
+    @Autowired
+    private CustomerTicketMapper customerTicketMapper;
+
+    @Test
+    public void testFindByTicketId() {
+
+        CustomerTicketPO customerTicketPO = buildCustomerTicketPO();
+//		this.entityManager.persist(customerTicketPO);
+        customerTicketMapper.save(customerTicketPO);
+
+        CustomerTicketPO target = this.customerTicketMapper.findByTicketId("ticketId1");
+        assertThat(target).isNotNull();
+        assertThat(target.getTicketId()).isEqualTo("ticketId1");
+    }
+
+    private CustomerTicketPO buildCustomerTicketPO() {
+
+        CustomerTicketPO customerTicketPO = new CustomerTicketPO();
+        customerTicketPO.setTicketId("ticketId1");
+        customerTicketPO.setStatus(TicketStatus.INITIALIZED);
+        customerTicketPO.setScore(0);
+        customerTicketPO.setAccount("account1");
+        customerTicketPO.setInquire("myInquire");
+        customerTicketPO.setOrderNumber("orderNumber1");
+
+        customerTicketPO.setStaffId("staffId1");
+        customerTicketPO.setStaffName("staffName1");
+        customerTicketPO.setStaffDescription("staffDescription");
+
+        return customerTicketPO;
+    }
 
 }

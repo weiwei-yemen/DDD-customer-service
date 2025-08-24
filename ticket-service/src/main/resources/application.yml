@@ -1,10 +1,11 @@
+# 一般放项目运行时的配置
 server:
   port: 8081
 
 order:
   service:
     url: http://localhost:8083/orders/profile/{orderNumber}
-    
+
 staff:
   service:
     url: http://localhost:8082/staffs/profile/
@@ -19,7 +20,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-      
+
   cloud:
     stream:
       bindings:
@@ -28,7 +29,7 @@ spring:
           binder: rabbitmq
         ticketApplicationOutput:
           destination: ticketApplication
-          contentType: application/json  
+          contentType: application/json
       binders:
         rabbitmq:
           type: rabbit

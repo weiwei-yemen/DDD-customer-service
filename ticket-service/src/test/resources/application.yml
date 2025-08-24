@@ -1,20 +1,22 @@
 server:
   port: 8081
-      
+
 order:
   service:
     url: 127.0.0.1:8083
-    
+
 staff:
   service:
     url: 127.0.0.1:8082
+
+# 这里的配置会覆盖@DataJpaTest配置的H2内存数据库，单独运行@DataJpaTest的时候需要将下面的注释
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ticket?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
     username: root
-    password: root
+    password: tanyemen@126.com
   jpa:
     properties:
       hibernate:
