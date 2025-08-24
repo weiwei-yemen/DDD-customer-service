@@ -62,8 +62,7 @@ public class CustomerTicketControllerTestsWithMockMvc {
 	public void testGetCustomerTicketById() throws Exception {//DONE
 
 		CustomerTicket customerTicket = initCustomerTicket();
-
-		String ticketId = "ticketId1";
+		String ticketId = customerTicket.getTicketId().getTicketId();
 
 		given(this.customerTicketQueryService.findByTicketId(ticketId)).willReturn(customerTicket);
 
@@ -80,12 +79,12 @@ public class CustomerTicketControllerTestsWithMockMvc {
 	// 初始化一个CustomerTicket
 	private CustomerTicket initCustomerTicket() {
 
-		ApplyTicketCommand applyTicketCommand = new ApplyTicketCommand("tianyalan", "orderNumber1", "myInquire");
-		applyTicketCommand.setTicketId("ticketId1");
-		applyTicketCommand.setOrder(createOrderProfile());
-		applyTicketCommand.setStaff(createStaffProfile());
+		String account = "tianyalan";
+		String inquire = "myInquire";
+		OrderProfile order = createOrderProfile();
+		StaffProfile staff = createStaffProfile();
 
-		CustomerTicket customerTicket = new CustomerTicket(applyTicketCommand);
+		CustomerTicket customerTicket = new CustomerTicket(account, inquire, order, staff);
 
 		return customerTicket;
 	}

@@ -36,12 +36,13 @@ public class CustomerTicketQueryServiceTests {
 	@Test
 	public void testFindByTicketId() throws Exception {
 		CustomerTicket customerTicket = initCustomerTicket();
+		String ticketId = customerTicket.getTicketId().getTicketId();
 		
-		Mockito.when(customerTicketRepository.findByTicketId("ticketId1")).thenReturn(customerTicket);
+		Mockito.when(customerTicketRepository.findByTicketId(ticketId)).thenReturn(customerTicket);
 	
-		CustomerTicket actual = CustomerTicketQueryService.findByTicketId("ticketId1");
+		CustomerTicket actual = CustomerTicketQueryService.findByTicketId(ticketId);
 		
-		assertThat(actual.getTicketId().getTicketId()).isEqualTo("ticketId1");
+		assertThat(actual.getTicketId().getTicketId()).isEqualTo(ticketId);
 		assertThat(actual.getStatus()).isEqualTo(TicketStatus.INITIALIZED);
 		assertThat(actual.getScore().getScore()).isEqualTo(0);
 	
@@ -50,12 +51,13 @@ public class CustomerTicketQueryServiceTests {
 	@Test
 	public void testFindSummaryByTicketId() throws Exception {
 		CustomerTicket customerTicket = initCustomerTicket();
+		String ticketId = customerTicket.getTicketId().getTicketId();
 		
-		Mockito.when(customerTicketRepository.findByTicketId("ticketId1")).thenReturn(customerTicket);
+		Mockito.when(customerTicketRepository.findByTicketId(ticketId)).thenReturn(customerTicket);
 	
-		CustomerTicketSummary actual = CustomerTicketQueryService.findSummaryByTicketId("ticketId1");
+		CustomerTicketSummary actual = CustomerTicketQueryService.findSummaryByTicketId(ticketId);
 		
-		assertThat(actual.getTicketId()).isEqualTo("ticketId1");
+		assertThat(actual.getTicketId()).isEqualTo(ticketId);
 		assertThat(actual.getStatus()).isEqualTo(TicketStatus.INITIALIZED.toString());
 		assertThat(actual.getScore()).isEqualTo(0);
 	
@@ -64,16 +66,13 @@ public class CustomerTicketQueryServiceTests {
 	//初始化一个CustomerTicket
 	private CustomerTicket initCustomerTicket() {
 		
-		ApplyTicketCommand applyTicketCommand = new ApplyTicketCommand(
-				"tianyalan",
-				"orderNumber1",
-				"myInquire"
-				);
-		applyTicketCommand.setTicketId("ticketId1");
-		applyTicketCommand.setOrder(createOrderProfile());
-		applyTicketCommand.setStaff(createStaffProfile());
+		String account = "tianyalan";
+		String inquire = "myInquire";
 		
-		CustomerTicket customerTicket = new CustomerTicket(applyTicketCommand);
+		OrderProfile order = createOrderProfile();
+		StaffProfile staff = createStaffProfile();
+		
+		CustomerTicket customerTicket = new CustomerTicket(account, inquire, order, staff);
 		
 		return customerTicket;
 	}

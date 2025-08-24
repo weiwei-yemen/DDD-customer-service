@@ -27,7 +27,7 @@ public class CustomerTicketTests {
 	public void testCustomerTicketCreation() throws Exception {		
 		CustomerTicket customerTicket = initCustomerTicket();
 
-		assertThat(customerTicket.getTicketId().getTicketId()).isEqualTo("ticketId1");
+		assertThat(customerTicket.getTicketId().getTicketId()).isNotNull();
 		assertThat(customerTicket.getStatus()).isEqualTo(TicketStatus.INITIALIZED);
 		assertThat(customerTicket.getScore().getScore()).isEqualTo(0);
 	}	
@@ -36,9 +36,9 @@ public class CustomerTicketTests {
 	public void testCustomerTicketFinishing() throws Exception {		
 		CustomerTicket customerTicket = initCustomerTicket();
 		
-		FinishTicketCommand finishTicketCommand = new FinishTicketCommand("ticketId", "tickct_is_finished", 100);
+		FinishTicketCommand finishTicketCommand = new FinishTicketCommand("ticketId1", "ticket_is_finished", 100);
 				
-		customerTicket.finishTicket(finishTicketCommand);
+		customerTicket.finishTicket(finishTicketCommand.getTicketId(), finishTicketCommand.getMessage(), finishTicketCommand.getScore());
 		assertThat(customerTicket.getStatus()).isEqualTo(TicketStatus.CLOSED);	
 		assertThat(customerTicket.getScore().getScore()).isEqualTo(100);	
 	}
@@ -46,12 +46,8 @@ public class CustomerTicketTests {
 	//初始化一个CustomerTicket
 	private CustomerTicket initCustomerTicket() {
 		
-		ApplyTicketCommand applyTicketCommand = new ApplyTicketCommand(
-				"tianyalan",
-				"orderNumber1",
-				"myInquire"
-				);
-		applyTicketCommand.setTicketId("ticketId1");
+		String account = "tianyalan";
+		String inquire = "myInquire";
 		
 		OrderProfile order = new OrderProfile();
 		order.setOrderNumber("orderNumber1");
@@ -59,12 +55,10 @@ public class CustomerTicketTests {
 		goodsList.add(new GoodsProfile("goodsCode1", "goodsName1", 100F));
 		order.setGoodsList(goodsList);
 		order.setDeliveryAddress("deliveryAddress1");
-		applyTicketCommand.setOrder(order);
 		
 		StaffProfile staff = new StaffProfile("staff1", "staffname1", "description1");
-		applyTicketCommand.setStaff(staff);
 		
-		CustomerTicket customerTicket = new CustomerTicket(applyTicketCommand);
+		CustomerTicket customerTicket = new CustomerTicket(account, inquire, order, staff);
 		
 		return customerTicket;
 	}
