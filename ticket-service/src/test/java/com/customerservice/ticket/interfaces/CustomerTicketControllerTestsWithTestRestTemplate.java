@@ -40,7 +40,11 @@ public class CustomerTicketControllerTestsWithTestRestTemplate {
 	@MockBean
 	private CustomerTicketQueryService customerTicketQueryService;
 
+
+    //@Test在事务中执行，执行后自动回滚，所以数据库中没有数据
+
 	@Test
+    //    @Commit // 添加这个注解会让事务在测试结束后提交
 	public void testApplyTicket() throws Exception {
 
 		ApplyTicketDTO applyTicketDTO = buildApplyTicketDTO();

@@ -54,7 +54,15 @@ public class CustomerTicketControllerTestsWithMockMvc {
 		ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
 		String requestJson = ow.writeValueAsString(applyTicketDTO);
 
-		this.mvc.perform(post("/tickets/application").content(requestJson).accept(MediaType.APPLICATION_JSON))
+        /*
+            1. contentType(MediaType.APPLICATION_JSON): 告诉服务器我（客户端）发送给你的数据是什么格式。
+            2. accept(MediaType.APPLICATION_JSON): 告诉服务器我（客户端）希望接收什么格式的响应数据。
+         */
+		this.mvc.perform(
+                post("/tickets/application")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+                        .accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 
@@ -64,6 +72,7 @@ public class CustomerTicketControllerTestsWithMockMvc {
 		CustomerTicket customerTicket = initCustomerTicket();
 		String ticketId = customerTicket.getTicketId().getTicketId();
 
+        // 当使用ticketId作为参数调用customerTicketQueryService.findByTicketId方法时，模拟返回customerTicket
 		given(this.customerTicketQueryService.findByTicketId(ticketId)).willReturn(customerTicket);
 
 		this.mvc.perform(get("/tickets/" + ticketId).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
